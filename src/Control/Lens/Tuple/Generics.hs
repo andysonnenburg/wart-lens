@@ -18,6 +18,7 @@ module Control.Lens.Tuple.Generics
        , N0, N1, N2, N3, N4, N5, N6, N7, N8
        ) where
 
+import Control.Applicative
 import Control.Lens.Iso
 import Control.Lens.Lens
 import Data.Proxy
@@ -72,9 +73,9 @@ class (p ~ (GSize s :> n), p ~ (GSize t :> n))
 instance ((GSize s :> n) ~ True, (GSize t :> n) ~ True, GIxed n s t a b)
       => GIxed' True n s s' t s' a b where
   {-# INLINE gix' #-}
-  gix' _ n f (s :*: s') = fmap (:*: s') $ gix n f s
+  gix' _ n f (s :*: s') = (:*: s') <$> gix n f s
 
 instance ((GSize s :> n) ~ False, n' ~ (GSize s :- n), GIxed n' s' t' a b)
       => GIxed' False n s s' s t' a b where
   {-# INLINE gix' #-}
-  gix' _ _ f (s :*: s') = fmap (s :*:) $ gix (Proxy :: Proxy n') f s'
+  gix' _ _ f (s :*: s') = (s :*:) <$> gix (Proxy :: Proxy n') f s'
